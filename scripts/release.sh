@@ -5,7 +5,8 @@ cd "$(dirname "$0")/.."
 case "${1:-}" in
 current)
   ref="${2:-}"
-  if [ -n "$ref" ]; then src=$(git show "$ref:pyproject.toml"); else src=$(cat pyproject.toml); fi
+  if [ -n "$ref" ]; then src=$(git show "$ref:pyproject.toml" 2>/dev/null || true); else src=$(cat pyproject.toml); fi  # a REF without the file predates versioning: 0.0.0
+  [ -n "$src" ] || { echo 0.0.0; exit 0; }
   printf '%s\n' "$src" | sed -n 's/^version = "\([0-9]*\.[0-9]*\.[0-9]*\)"$/\1/p' | head -1
   ;;
 set)
